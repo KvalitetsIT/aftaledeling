@@ -17,6 +17,7 @@ import org.openehealth.ipf.commons.ihe.xds.core.ebxml.EbXMLFactory;
 import org.openehealth.ipf.commons.ihe.xds.core.ebxml.ebxml30.EbXMLFactory30;
 import org.openehealth.ipf.commons.ihe.xds.core.ebxml.ebxml30.EbXMLQueryResponse30;
 import org.openehealth.ipf.commons.ihe.xds.core.ebxml.ebxml30.ProvideAndRegisterDocumentSetRequestType;
+import org.openehealth.ipf.commons.ihe.xds.core.ebxml.ebxml30.RetrieveDocumentSetRequestType;
 import org.openehealth.ipf.commons.ihe.xds.core.ebxml.ebxml30.RetrieveDocumentSetResponseType;
 import org.openehealth.ipf.commons.ihe.xds.core.ebxml.ebxml30.RetrieveDocumentSetResponseType.DocumentResponse;
 import org.openehealth.ipf.commons.ihe.xds.core.metadata.Code;
@@ -102,12 +103,22 @@ public class AppointmentXdsRequestService {
 		}
 	}
 	
-	
-
 	public String fetchDocument(String documentId) throws IOException, XdsException {
+		return fetchDocument(documentId, null, null);
+	}	
+	
+	public String fetchDocument(String documentId, String homeCommunityId, String repositoryId) throws IOException, XdsException {
 		List<String> documentIds = new LinkedList<String>();
 		documentIds.add(documentId);
-		RetrieveDocumentSetResponseType repositoryResponse= iti43PortType.documentRepositoryRetrieveDocumentSet(appointmentXdsRequestBuilderService.buildRetrieveDocumentSetRequestType(documentIds));
+		
+		RetrieveDocumentSetRequestType rdsrt = null;
+		if (repositoryId != null && homeCommunityId != null) {
+			rdsrt = appointmentXdsRequestBuilderService.buildRetrieveDocumentSetRequestType(documentIds, homeCommunityId, repositoryId);
+		} else {
+			rdsrt = appointmentXdsRequestBuilderService.buildRetrieveDocumentSetRequestType(documentIds);
+		}
+		
+		RetrieveDocumentSetResponseType repositoryResponse= iti43PortType.documentRepositoryRetrieveDocumentSet(rdsrt);
 		if (repositoryResponse.getRegistryResponse().getRegistryErrorList() == null || repositoryResponse.getRegistryResponse().getRegistryErrorList().getRegistryError() == null || repositoryResponse.getRegistryResponse().getRegistryErrorList().getRegistryError().isEmpty()) {
 			// if no documents an error is produced, get(0) should work.
 			DocumentResponse documentResponse = repositoryResponse.getDocumentResponse().get(0);
@@ -121,7 +132,9 @@ public class AppointmentXdsRequestService {
 			}
 			throw e;
 		}
-	}	
+	}
+	
+
 
 	
 	public String createAndRegisterDocumentAsReplacement(String externalIdForUpdatedDocument, String updatedAppointmentXmlDocument, DocumentMetadata updatedAppointmentCdaMetadata, String externalIdForDocumentToReplace) throws XdsException {
@@ -197,5 +210,4 @@ public class AppointmentXdsRequestService {
 		Client proxy = ClientProxy.getClient(o);
 		proxy.getInInterceptors().add(interceptor);
 	}
-	
 }

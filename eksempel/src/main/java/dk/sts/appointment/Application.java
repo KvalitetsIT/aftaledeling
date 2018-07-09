@@ -70,6 +70,17 @@ public class Application implements CommandLineRunner {
 		List<DocumentEntry> currentAppointments = appointmentXdsRequestService.getAllAppointmentsForPatient(PATIENT_ID);
 		System.out.println("The patient with id="+PATIENT_ID+" has "+currentAppointments.size()+" registered in the XDS registry.");
 
+		// Get appointment document from the first entry (if exits)
+		if (currentAppointments.size() > 0 ) {
+			DocumentEntry entry = currentAppointments.get(0);
+			String uniqueUid = entry.getUniqueId();
+			String repositoryId = entry.getRepositoryUniqueId();
+			String homeCommunityId = entry.getHomeCommunityId();
+			String document = appointmentXdsRequestService.fetchDocument(uniqueUid, repositoryId, homeCommunityId);
+			System.out.println("The document: "+document);
+		}
+		
+		
 		// Register appointment (data extracted from the example file)
 		String originalXmlDocument = getXmlFileContent("/DK-APD_Example_1.xml");
 		

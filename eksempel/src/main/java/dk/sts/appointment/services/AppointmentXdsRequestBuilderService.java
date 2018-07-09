@@ -34,7 +34,6 @@ import org.openehealth.ipf.commons.ihe.xds.core.metadata.Vocabulary;
 import org.openehealth.ipf.commons.ihe.xds.core.requests.ProvideAndRegisterDocumentSet;
 import org.openehealth.ipf.commons.ihe.xds.core.requests.QueryRegistry;
 import org.openehealth.ipf.commons.ihe.xds.core.requests.query.FindDocumentsQuery;
-import org.openehealth.ipf.commons.ihe.xds.core.requests.query.GetDocumentsAndAssociationsQuery;
 import org.openehealth.ipf.commons.ihe.xds.core.requests.query.GetDocumentsQuery;
 import org.openehealth.ipf.commons.ihe.xds.core.requests.query.Query;
 import org.openehealth.ipf.commons.ihe.xds.core.requests.query.QueryReturnType;
@@ -203,17 +202,22 @@ public class AppointmentXdsRequestBuilderService {
 		return body;
 	}
 
-
-	public RetrieveDocumentSetRequestType buildRetrieveDocumentSetRequestType(List<String> documentIds){
+	public RetrieveDocumentSetRequestType buildRetrieveDocumentSetRequestType(List<String> documentIds, String homeCommunityId, String repositoryId) {
 		RetrieveDocumentSetRequestType retrieveDocumentSetRequestType = new RetrieveDocumentSetRequestType();
 
 		for (Iterator<String> iterator = documentIds.iterator(); iterator.hasNext();) {
 			RetrieveDocumentSetRequestType.DocumentRequest documentRequest = new RetrieveDocumentSetRequestType.DocumentRequest();
-			documentRequest.setRepositoryUniqueId(repositoryUniqueId);
+			documentRequest.setRepositoryUniqueId(repositoryId);
+			documentRequest.setHomeCommunityId(homeCommunityId);
 			documentRequest.setDocumentUniqueId(iterator.next());
 			retrieveDocumentSetRequestType.getDocumentRequest().add(documentRequest);
 		}
 		return retrieveDocumentSetRequestType;
+	}
+
+
+	public RetrieveDocumentSetRequestType buildRetrieveDocumentSetRequestType(List<String> documentIds){
+		return buildRetrieveDocumentSetRequestType(documentIds, null, repositoryUniqueId);
 	}
 
 	public AdhocQueryRequest buildAdhocQueryRequest(String citizenId, List<Code> typeCodes, Date start, Date end) {

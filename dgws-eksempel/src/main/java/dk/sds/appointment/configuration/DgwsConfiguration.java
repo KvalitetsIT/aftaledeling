@@ -22,6 +22,7 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.web.client.RestTemplate;
 
 import dk.sds.appointment.dgws.DgwsSoapDecorator;
+import dk.sds.appointment.dgws.DisableMustUnderstandInterceptor;
 import dk.sds.appointment.dgws.HsuidSoapDecorator;
 import dk.sds.appointment.dgws.STSRequestHelper;
 import dk.sosi.seal.SOSIFactory;
@@ -33,6 +34,9 @@ import dk.sosi.seal.vault.FileBasedCredentialVault;
 @PropertySource("classpath:dgws.properties")
 public class DgwsConfiguration {
 
+	@Value("${soap.setmustunderstandtofalse:false}")
+	private boolean setMustUnderstandToFalse;
+	
 	@Value("${keystore.alias}")
 	private String keystoreAlias;
 
@@ -54,6 +58,7 @@ public class DgwsConfiguration {
 		System.setProperty("dk.sosi.seal.vault.CredentialVault#Alias", keystoreAlias);
 		DgwsSoapDecorator dgwsSoapDecorator = appContext.getBean("dgwsSoapDecorator", DgwsSoapDecorator.class);
 		HsuidSoapDecorator hsuidSoapDecorator = appContext.getBean(HsuidSoapDecorator.class);
+		DisableMustUnderstandInterceptor dmui = appContext.getBean(DisableMustUnderstandInterceptor.class);
 
 		// Add DGWS decorator to all ITI beans
 		Iti41PortType iti41 = appContext.getBean(Iti41PortType.class);
@@ -71,6 +76,13 @@ public class DgwsConfiguration {
 		Iti57PortType iti57 = appContext.getBean(Iti57PortType.class);
 		Client proxy57 = ClientProxy.getClient(iti57);
 		proxy57.getOutInterceptors().add(hsuidSoapDecorator);
+		
+		if (setMustUnderstandToFalse) {
+			proxy41.getOutInterceptors().add(dmui);
+			proxy43.getOutInterceptors().add(dmui);
+			proxy18.getOutInterceptors().add(dmui);
+			proxy57.getOutInterceptors().add(dmui);
+		}
 	}
 
 	@Bean
@@ -83,6 +95,11 @@ public class DgwsConfiguration {
 		return new DgwsSoapDecorator();
 	}
 
+	@Bean
+	public DisableMustUnderstandInterceptor mustUnderstandInterceptor() {
+		return new DisableMustUnderstandInterceptor();
+	}
+	
 	@Bean
 	public CredentialVault getVault() throws CredentialVaultException, IOException {
 		Resource resource = resourceLoader.getResource("classpath:" + keystoreFilename);
@@ -108,5 +125,4 @@ public class DgwsConfiguration {
 	public RestTemplate restTemplate() {
 		return new RestTemplate();
 	}
-
 }
