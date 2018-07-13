@@ -31,6 +31,8 @@ import dk.sts.appointment.utilities.PatientIdAuthority;
 
 public class ApplicationConfiguration {
 
+	private static String DEFAULT_PATIENT_ID = "1205840002";
+
 	private static Logger LOGGER = LoggerFactory.getLogger(ApplicationConfiguration.class);
 
 	private TrustManager[] trustAllCerts = new TrustManager[] {
@@ -73,6 +75,12 @@ public class ApplicationConfiguration {
 	@Bean
 	public PatientIdAuthority getPatientIdAuthority() {
 		return new PatientIdAuthority(NSI.CPR_OID);
+	}
+	
+	@Bean
+	public UserContext getUserContext() {
+		UserContext uc = new UserContext(DEFAULT_PATIENT_ID);
+		return uc;
 	}
 
 	@Bean

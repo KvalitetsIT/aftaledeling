@@ -100,7 +100,8 @@ public class AppointmentXdsRequestBuilderService {
 		AssigningAuthority organisationAssigningAuthority = new AssigningAuthority(documentMetadata.getOrganisation().getSchemeName());
 		Author author = new Author();
 		if (documentMetadata.getOrganisation() != null && documentMetadata.getOrganisation().getCode() != null) {
-			Organization authorOrganisation = new Organization(documentMetadata.getOrganisation().getDisplayName().getValue(), documentMetadata.getOrganisation().getCode(), organisationAssigningAuthority);
+			String orgDisplayname = (documentMetadata.getOrganisation().getDisplayName() != null ? documentMetadata.getOrganisation().getDisplayName().getValue() : "");
+			Organization authorOrganisation = new Organization(orgDisplayname, documentMetadata.getOrganisation().getCode(), organisationAssigningAuthority);
 			author.getAuthorInstitution().add(authorOrganisation);
 		}
 		documentEntry.setAuthor(author);

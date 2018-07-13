@@ -30,6 +30,7 @@ import dk.sosi.seal.pki.SOSITestFederation;
 import dk.sosi.seal.vault.CredentialVault;
 import dk.sosi.seal.vault.CredentialVaultException;
 import dk.sosi.seal.vault.FileBasedCredentialVault;
+import dk.sts.appointment.configuration.UserContext;
 
 @PropertySource("classpath:dgws.properties")
 public class DgwsConfiguration {
@@ -56,6 +57,7 @@ public class DgwsConfiguration {
 	public void init() {
 		// The SOSI Seal Library reads the alias value using System.getProperty()
 		System.setProperty("dk.sosi.seal.vault.CredentialVault#Alias", keystoreAlias);
+		
 		DgwsSoapDecorator dgwsSoapDecorator = appContext.getBean("dgwsSoapDecorator", DgwsSoapDecorator.class);
 		HsuidSoapDecorator hsuidSoapDecorator = appContext.getBean(HsuidSoapDecorator.class);
 		DisableMustUnderstandInterceptor dmui = appContext.getBean(DisableMustUnderstandInterceptor.class);
@@ -87,7 +89,8 @@ public class DgwsConfiguration {
 
 	@Bean
 	public HsuidSoapDecorator hsuidSoapDecorator() {
-		return new HsuidSoapDecorator();
+		UserContext uc = appContext.getBean(UserContext.class);
+		return new HsuidSoapDecorator(uc);
 	}
 	
 	@Bean

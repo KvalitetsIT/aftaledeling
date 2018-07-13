@@ -20,6 +20,7 @@
 		<java.source-version>1.8</java.source-version>
 		<java.target-version>1.8</java.target-version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+                <cda-builder-version>d257b79280a786d72c902790aa690a88e88cb097</cda-builder-version>
 	</properties>
 	<build>
 		<plugins>
@@ -32,7 +33,17 @@
 			</plugin>
 		</plugins>
 	</build>
+	<dependencyManagement>
+		<dependencies>
+		 <dependency>
+                        <groupId>dk.s4.hl7</groupId>
+                        <artifactId>builders</artifactId>
+                        <version>${cda-builder-version}</version>
+                </dependency>
+		</dependencies>
+	</dependencyManagement>
         <modules>
+	   <module>4s-cda-builder-dependency</module>
            <module>eksempel</module>
            <module>dgws-eksempel</module>
         </modules>
