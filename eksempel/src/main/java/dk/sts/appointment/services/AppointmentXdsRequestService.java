@@ -6,8 +6,11 @@ import java.io.InputStreamReader;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.cxf.endpoint.Client;
@@ -112,10 +115,10 @@ public class AppointmentXdsRequestService {
 		return fetchDocument(documentId, null, null);
 	}	
 
-	public String fetchDocument(String documentId, String homeCommunityId, String repositoryId) throws IOException, XdsException {
-		List<String> documentIds = new LinkedList<String>();
-		documentIds.add(documentId);
+	public Map<String, String> fetchDocuments(List<String> documentIds, String homeCommunityId, String repositoryId) throws XdsException {
 
+		Map<String, String> documents = new HashMap<>();
+		
 		RetrieveDocumentSetRequestType rdsrt = null;
 		if (repositoryId != null && homeCommunityId != null) {
 			rdsrt = appointmentXdsRequestBuilderService.buildRetrieveDocumentSetRequestType(documentIds, homeCommunityId, repositoryId);
@@ -126,9 +129,17 @@ public class AppointmentXdsRequestService {
 		RetrieveDocumentSetResponseType repositoryResponse= iti43PortType.documentRepositoryRetrieveDocumentSet(rdsrt);
 		if (repositoryResponse.getRegistryResponse().getRegistryErrorList() == null || repositoryResponse.getRegistryResponse().getRegistryErrorList().getRegistryError() == null || repositoryResponse.getRegistryResponse().getRegistryErrorList().getRegistryError().isEmpty()) {
 			// if no documents an error is produced, get(0) should work.
-			DocumentResponse documentResponse = repositoryResponse.getDocumentResponse().get(0);
-			String documentString = new BufferedReader(new InputStreamReader(documentResponse.getDocument().getInputStream())).lines().collect(Collectors.joining());
-			return documentString;
+			
+			Iterator<DocumentResponse> documentIterator = repositoryResponse.getDocumentResponse().iterator();
+			while (documentIterator.hasNext()) {
+				DocumentResponse documentResponse = documentIterator.next();
+				try {
+					String documentString = new BufferedReader(new InputStreamReader(documentResponse.getDocument().getInputStream())).lines().collect(Collectors.joining());
+					documents.put(documentResponse.getDocumentUniqueId(), documentString);
+				} catch (IOException e) {
+					throw new RuntimeException(e);
+				}
+			}
 
 		} else {
 			XdsException e = new XdsException();
@@ -137,6 +148,14 @@ public class AppointmentXdsRequestService {
 			}
 			throw e;
 		}
+		return documents;
+	}
+	
+	public String fetchDocument(String documentId, String homeCommunityId, String repositoryId) throws IOException, XdsException {
+		List<String> documentIds = new LinkedList<String>();
+		documentIds.add(documentId);
+		Map<String, String> documentResult = fetchDocuments(documentIds, homeCommunityId, repositoryId);
+		return documentResult.get(documentId);
 	}
 
 

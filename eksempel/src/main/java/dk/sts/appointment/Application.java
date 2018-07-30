@@ -6,7 +6,10 @@ import java.io.StringWriter;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -67,13 +70,19 @@ public class Application implements CommandLineRunner {
 		System.out.println("The patient with id="+userContext.getPatientId()+" has "+currentAppointments.size()+" registered in the XDS registry.");
 
 		// Get appointment document from the first entry (if exits)
-		if (currentAppointments.size() > 0 ) {
+		if (currentAppointments.size() > 0 && false) {
 			DocumentEntry entry = currentAppointments.get(0);
-			String uniqueUid = entry.getUniqueId();
+			Iterator<DocumentEntry> ids = currentAppointments.iterator();
 			String repositoryId = entry.getRepositoryUniqueId();
 			String homeCommunityId = entry.getHomeCommunityId();
-			String document = appointmentXdsRequestService.fetchDocument(uniqueUid, repositoryId, homeCommunityId);
-			System.out.println("The document: "+document);
+			List<String> documentIds = new LinkedList<>();
+			while (ids.hasNext()) {
+				documentIds.add(ids.next().getUniqueId());
+			}
+			Map<String, String> map = appointmentXdsRequestService.fetchDocuments(documentIds, homeCommunityId, repositoryId);
+			for (String value : map.values()) {
+				System.out.println("The document: "+value);
+			}
 		}
 		
 		
