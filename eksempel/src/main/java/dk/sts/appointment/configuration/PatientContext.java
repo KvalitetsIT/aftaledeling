@@ -1,10 +1,10 @@
 package dk.sts.appointment.configuration;
 
-public class UserContext {
+public class PatientContext {
 
 	private String patientId;
 	
-	public UserContext(String patientId) {
+	public PatientContext(String patientId) {
 		this.patientId = patientId;
 	}
 

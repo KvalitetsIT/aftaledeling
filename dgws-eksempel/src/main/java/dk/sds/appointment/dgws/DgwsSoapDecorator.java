@@ -11,21 +11,16 @@ import org.apache.cxf.headers.Header;
 import org.apache.cxf.interceptor.Fault;
 import org.apache.cxf.phase.Phase;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import dk.sds.dgws.DgwsContext;
 import dk.sosi.seal.SOSIFactory;
-import dk.sosi.seal.model.AuthenticationLevel;
-import dk.sosi.seal.model.CareProvider;
 import dk.sosi.seal.model.IDCard;
 import dk.sosi.seal.model.Request;
-import dk.sosi.seal.model.SecurityTokenRequest;
 import dk.sosi.seal.model.SecurityTokenResponse;
 import dk.sosi.seal.model.SystemIDCard;
-import dk.sosi.seal.model.constants.SubjectIdentifierTypeValues;
-import dk.sosi.seal.vault.CredentialVault;
 import dk.sosi.seal.xml.XmlUtil;
 
 public class DgwsSoapDecorator extends AbstractSoapInterceptor {
@@ -37,16 +32,7 @@ public class DgwsSoapDecorator extends AbstractSoapInterceptor {
 	private STSRequestHelper requestHelper;
 
 	@Autowired
-	private CredentialVault vault;
-
-	@Value("${medcom.cvr}")
-	private String cvr;
-
-	@Value("${medcom.orgname}")
-	private String orgname;
-
-	@Value("${medcom.itsystem}")
-	private String itsystem;
+	private DgwsContext dgwsContext;
 
 	public DgwsSoapDecorator() {
 		super(Phase.PRE_STREAM);
@@ -80,15 +66,12 @@ public class DgwsSoapDecorator extends AbstractSoapInterceptor {
 	}
 
 	private IDCard getToken() throws IOException {
-		CareProvider careProvider = new CareProvider(SubjectIdentifierTypeValues.CVR_NUMBER, cvr, orgname);
-		SystemIDCard selfSignedSystemIdCard = sosiFactory.createNewSystemIDCard(itsystem, careProvider, AuthenticationLevel.VOCES_TRUSTED_SYSTEM, null, null, vault.getSystemCredentialPair().getCertificate(), null);
 
-		SecurityTokenRequest securityTokenRequest = sosiFactory.createNewSecurityTokenRequest();
-		securityTokenRequest.setIDCard(selfSignedSystemIdCard);
-		Document doc = securityTokenRequest.serialize2DOMDocument();
-
-		String requestXml = XmlUtil.node2String(doc, false, true);
-		String responseXml = requestHelper.sendRequest(requestXml);
+		Document requestXml = dgwsContext.getSosiIdCardRequest();
+	
+		String requestXmlString = XmlUtil.node2String(requestXml, false, true);
+		
+		String responseXml = requestHelper.sendRequest(requestXmlString);
 		SecurityTokenResponse securityTokenResponse = sosiFactory.deserializeSecurityTokenResponse(responseXml);
 
 		if (securityTokenResponse.isFault() || securityTokenResponse.getIDCard() == null) {

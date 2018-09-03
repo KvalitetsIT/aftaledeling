@@ -27,7 +27,7 @@ import dk.s4.hl7.cda.model.apd.AppointmentDocument;
 import dk.s4.hl7.cda.model.apd.AppointmentDocument.Status;
 import dk.sds.appointment.configuration.DgwsConfiguration;
 import dk.sts.appointment.configuration.ApplicationConfiguration;
-import dk.sts.appointment.configuration.UserContext;
+import dk.sts.appointment.configuration.PatientContext;
 import dk.sts.appointment.dto.DocumentMetadata;
 import dk.sts.appointment.services.AppointmentXdsRequestService;
 
@@ -41,7 +41,7 @@ public class AftaleGenerator implements CommandLineRunner {
 	AppointmentXdsRequestService appointmentXdsRequestService;
 
 	@Autowired
-	UserContext userContext;
+	PatientContext oatientContext;
 
 	@Override
 	public void run(String... args) throws Exception {
@@ -87,7 +87,7 @@ public class AftaleGenerator implements CommandLineRunner {
 				System.exit(0);
 			}
 
-			userContext.setPatientId(patientId);
+			oatientContext.setPatientId(patientId);
 			PersonIdentity patientIdentity = new PersonIdentity.PersonBuilder(personText).build();
 
 			AppointmentDocument appointmentDocument = createAppointmentDocument(uuid, patientId, orgSor, orgName, orgAddress, orgPostalCode, orgCity, orgPhone, patientIdentity, fromDate, toDate, indication);

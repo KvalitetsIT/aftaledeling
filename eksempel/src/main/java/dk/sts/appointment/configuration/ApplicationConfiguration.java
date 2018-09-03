@@ -78,8 +78,8 @@ public class ApplicationConfiguration {
 	}
 	
 	@Bean
-	public UserContext getUserContext() {
-		UserContext uc = new UserContext(DEFAULT_PATIENT_ID);
+	public PatientContext getUserContext() {
+		PatientContext uc = new PatientContext(DEFAULT_PATIENT_ID);
 		return uc;
 	}
 

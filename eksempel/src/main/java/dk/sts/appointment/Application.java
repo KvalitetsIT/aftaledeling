@@ -35,7 +35,7 @@ import org.xml.sax.SAXException;
 import dk.s4.hl7.cda.convert.APDXmlCodec;
 import dk.s4.hl7.cda.model.apd.AppointmentDocument;
 import dk.sts.appointment.configuration.ApplicationConfiguration;
-import dk.sts.appointment.configuration.UserContext;
+import dk.sts.appointment.configuration.PatientContext;
 import dk.sts.appointment.dto.DocumentMetadata;
 import dk.sts.appointment.services.AppointmentXdsRequestService;
 
@@ -54,7 +54,7 @@ public class Application implements CommandLineRunner {
 	AppointmentXdsRequestService appointmentXdsRequestService;
 	
 	@Autowired
-	UserContext userContext;
+	PatientContext userContext;
 
 	public static void main(String[] args) throws Exception {
 		LOGGER.debug("Starting application");

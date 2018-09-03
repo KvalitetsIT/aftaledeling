@@ -25,12 +25,13 @@ import dk.sds.appointment.dgws.DgwsSoapDecorator;
 import dk.sds.appointment.dgws.DisableMustUnderstandInterceptor;
 import dk.sds.appointment.dgws.HsuidSoapDecorator;
 import dk.sds.appointment.dgws.STSRequestHelper;
+import dk.sds.dgws.DgwsContext;
 import dk.sosi.seal.SOSIFactory;
 import dk.sosi.seal.pki.SOSITestFederation;
 import dk.sosi.seal.vault.CredentialVault;
 import dk.sosi.seal.vault.CredentialVaultException;
 import dk.sosi.seal.vault.FileBasedCredentialVault;
-import dk.sts.appointment.configuration.UserContext;
+import dk.sts.appointment.configuration.PatientContext;
 
 @PropertySource("classpath:dgws.properties")
 public class DgwsConfiguration {
@@ -86,11 +87,16 @@ public class DgwsConfiguration {
 			proxy57.getOutInterceptors().add(dmui);
 		}
 	}
+	
+	@Bean
+	public DgwsContext dgwsContext() {
+		PatientContext uc = appContext.getBean(PatientContext.class);
+		return new DgwsContext(uc);
+	}
 
 	@Bean
 	public HsuidSoapDecorator hsuidSoapDecorator() {
-		UserContext uc = appContext.getBean(UserContext.class);
-		return new HsuidSoapDecorator(uc);
+		return new HsuidSoapDecorator(dgwsContext());
 	}
 	
 	@Bean

@@ -30,14 +30,14 @@ import dk.nsi.hsuid.SystemVersionAttribute;
 import dk.nsi.hsuid.UserTypeAttribute;
 import dk.nsi.hsuid._2016._08.hsuid_1_1.HsuidHeader;
 import dk.nsi.hsuid._2016._08.hsuid_1_1.SubjectIdentifierType;
-import dk.sts.appointment.configuration.UserContext;
+import dk.sds.dgws.DgwsContext;
 
 public class HsuidSoapDecorator extends DgwsSoapDecorator {
 
-	UserContext userContext;
+	DgwsContext dgwsContext;
 	
-	public HsuidSoapDecorator(UserContext userContext) {
-		this.userContext = userContext;
+	public HsuidSoapDecorator(DgwsContext dgwsContext) {
+		this.dgwsContext = dgwsContext;
 	}
 
 	@Override
@@ -45,26 +45,26 @@ public class HsuidSoapDecorator extends DgwsSoapDecorator {
 		super.handleMessage(message);
 		try {
 			// HsuidHeader
-			Header hsUidHeader = getHsuid("nsi:HealthcareProfessional", "0101584160", "system owner", "test aftaler", "1.0", "MyOrganisation", "Aftale");
+			Header hsUidHeader = getHsuid("nsi:HealthcareProfessional", "system owner", "test aftaler", "1.0", "MyOrganisation", "Aftale");
 			message.getHeaders().add(hsUidHeader);
 		} catch (JAXBException | ParserConfigurationException e) {
 			throw new Fault(e);
 		}
 	}
 
-	private Header getHsuid(String isCitizen, String userCivilRegistrationNumber, String systemOwner, String systemName, String systemVersion, String responsibleOrg, String issuer) throws JAXBException, ParserConfigurationException {
+	private Header getHsuid(String isCitizen, String systemOwner, String systemName, String systemVersion, String responsibleOrg, String issuer) throws JAXBException, ParserConfigurationException {
 		List<Attribute> attributes = new ArrayList<Attribute>();
-		attributes.add(new CitizenCivilRegistrationNumberAttribute(userContext.getPatientId()));
+		attributes.add(new CitizenCivilRegistrationNumberAttribute(dgwsContext.getPatientContext().getPatientId()));
 		attributes.add(new UserTypeAttribute(isCitizen));
-		attributes.add(new ActingUserCivilRegistrationNumberAttribute(userCivilRegistrationNumber));
-		attributes.add(new OrganisationIdentifierAttribute("293591000016003", SubjectIdentifierType.NSI_SORCODE.toString()));
+		attributes.add(new ActingUserCivilRegistrationNumberAttribute(dgwsContext.getUserCivilRegistrationNumber()));
+		attributes.add(new OrganisationIdentifierAttribute(dgwsContext.getOrganisationIdentifier(), dgwsContext.getOrganisationIdentifierType()));
 		attributes.add(new SystemVendorNameAttribute(systemOwner));
 		attributes.add(new SystemNameAttribute(systemName));
 		attributes.add(new SystemVersionAttribute(systemVersion));
 		attributes.add(new OperationsOrganisationNameAttribute(responsibleOrg));
-		attributes.add(new ConsentOverrideAttribute(true));
-		attributes.add(new ResponsibleUserCivilRegistrationNumberAttribute(userCivilRegistrationNumber));
-		attributes.add(new ResponsibleUserAuthorizationCodeAttribute("SRTTQ"));
+		attributes.add(new ConsentOverrideAttribute(dgwsContext.getConsentOverride()));
+		attributes.add(new ResponsibleUserCivilRegistrationNumberAttribute(dgwsContext.getUserCivilRegistrationNumber()));
+		attributes.add(new ResponsibleUserAuthorizationCodeAttribute(dgwsContext.getUserAuthorizationCode()));
 		HsuidHeader hsuidHeader = HealthcareServiceUserIdentificationHeaderUtil.createHealthcareServiceUserIdentificationHeader(issuer, attributes);
 
 		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
