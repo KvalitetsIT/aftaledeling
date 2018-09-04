@@ -44,9 +44,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import dk.s4.hl7.cda.codes.Loinc;
 import dk.s4.hl7.cda.codes.MedCom;
 import dk.s4.hl7.cda.codes.NSI;
 import dk.s4.hl7.cda.model.apd.AppointmentDocument;
+import dk.s4.hl7.cda.model.phmr.PHMRDocument;
 import dk.sts.appointment.AppointmentConstants;
 import dk.sts.appointment.dto.DocumentMetadata;
 
@@ -81,6 +83,14 @@ public class AppointmentXdsRequestService {
 	public List<DocumentEntry> getAppointmentsForPatient(String citizenId, Date start, Date end) throws XdsException {
 		List<Code> typeCodes = new ArrayList<Code>();
 		typeCodes.add(AppointmentConstants.APPOINTMENT_CODE);
+		return getDocumentsForPatient(citizenId, typeCodes, start, end);
+	}
+
+	public List<DocumentEntry> getDocumentsForPatient(String citizenId) throws XdsException {
+		return getDocumentsForPatient(citizenId, null, null, null);
+	}
+	
+	public List<DocumentEntry> getDocumentsForPatient(String citizenId, List<Code> typeCodes, Date start, Date end) throws XdsException {
 		AdhocQueryRequest adhocQueryRequest = appointmentXdsRequestBuilderService.buildAdhocQueryRequest(citizenId, typeCodes, start, end);
 		AdhocQueryResponse adhocQueryResponse = iti18PortType.documentRegistryRegistryStoredQuery(adhocQueryRequest);
 		if (adhocQueryResponse.getRegistryErrorList() != null && !adhocQueryResponse.getRegistryErrorList().getRegistryError().isEmpty()) {
@@ -207,6 +217,27 @@ public class AppointmentXdsRequestService {
 		appointmentCdaMetadata.setServiceStopTime(apd.getServiceStopTime());
 		return appointmentCdaMetadata;
 	}
+	
+	public DocumentMetadata createDocumentMetadataPhmr(PHMRDocument phmr) throws ParseException {
+		DocumentMetadata appointmentCdaMetadata = new DocumentMetadata();
+		appointmentCdaMetadata.setTitle(phmr.getTitle());
+		appointmentCdaMetadata.setPatientId(new Code(phmr.getPatient().getId().getExtension(), new LocalizedString(phmr.getPatient().getId().getAuthorityName()), phmr.getPatient().getId().getRoot()));
+		appointmentCdaMetadata.setReportTime(phmr.getAuthor().getTime());
+		appointmentCdaMetadata.setOrganisation(new Code(phmr.getAuthor().getId().getExtension(), new LocalizedString(phmr.getAuthor().getOrganizationIdentity().getOrgName()), NSI.SOR_OID));
+		appointmentCdaMetadata.setClassCode(new Code("001", new LocalizedString("Klinisk rapport"), "1.2.208.184.100.9"));
+		appointmentCdaMetadata.setFormatCode(new Code("urn:ad:dk:medcom:appointment", new LocalizedString("DK PHMR schema"), "1.2.208.184.100.10"));
+		appointmentCdaMetadata.setHealthcareFacilityTypeCode(new Code("22232009", new LocalizedString("hospital") ,"2.16.840.1.113883.6.96"));
+		appointmentCdaMetadata.setPracticeSettingCode(new Code("408443003", new LocalizedString("almen medicin"),"2.16.840.1.113883.6.96"));
+		appointmentCdaMetadata.setSubmissionTime(new Date());
+		Code PHMR_CODE = new Code(Loinc.PHMR_CODE, new LocalizedString(Loinc.PMHR_DISPLAYNAME), Loinc.OID);
+
+		appointmentCdaMetadata.setContentTypeCode(PHMR_CODE);
+		appointmentCdaMetadata.setTypeCode(PHMR_CODE);
+		appointmentCdaMetadata.setServiceStartTime(phmr.getServiceStartTime());
+		appointmentCdaMetadata.setServiceStopTime(phmr.getServiceStopTime());
+		return appointmentCdaMetadata;
+	}
+	
 
 	protected EbXMLFactory getEbXmlFactory() {
 		return ebXMLFactory;

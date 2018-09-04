@@ -12,6 +12,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.apache.cxf.binding.soap.SoapMessage;
 import org.apache.cxf.headers.Header;
 import org.apache.cxf.interceptor.Fault;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
@@ -21,7 +22,6 @@ import dk.nsi.hsuid.CitizenCivilRegistrationNumberAttribute;
 import dk.nsi.hsuid.ConsentOverrideAttribute;
 import dk.nsi.hsuid.HealthcareServiceUserIdentificationHeaderUtil;
 import dk.nsi.hsuid.OperationsOrganisationNameAttribute;
-import dk.nsi.hsuid.OrganisationIdentifierAttribute;
 import dk.nsi.hsuid.ResponsibleUserAuthorizationCodeAttribute;
 import dk.nsi.hsuid.ResponsibleUserCivilRegistrationNumberAttribute;
 import dk.nsi.hsuid.SystemNameAttribute;
@@ -29,17 +29,13 @@ import dk.nsi.hsuid.SystemVendorNameAttribute;
 import dk.nsi.hsuid.SystemVersionAttribute;
 import dk.nsi.hsuid.UserTypeAttribute;
 import dk.nsi.hsuid._2016._08.hsuid_1_1.HsuidHeader;
-import dk.nsi.hsuid._2016._08.hsuid_1_1.SubjectIdentifierType;
 import dk.sds.dgws.DgwsContext;
 
 public class HsuidSoapDecorator extends DgwsSoapDecorator {
 
+	@Autowired
 	DgwsContext dgwsContext;
 	
-	public HsuidSoapDecorator(DgwsContext dgwsContext) {
-		this.dgwsContext = dgwsContext;
-	}
-
 	@Override
 	public void handleMessage(SoapMessage message) throws Fault {
 		super.handleMessage(message);
@@ -57,7 +53,7 @@ public class HsuidSoapDecorator extends DgwsSoapDecorator {
 		attributes.add(new CitizenCivilRegistrationNumberAttribute(dgwsContext.getPatientContext().getPatientId()));
 		attributes.add(new UserTypeAttribute(isCitizen));
 		attributes.add(new ActingUserCivilRegistrationNumberAttribute(dgwsContext.getUserCivilRegistrationNumber()));
-		attributes.add(new OrganisationIdentifierAttribute(dgwsContext.getOrganisationIdentifier(), dgwsContext.getOrganisationIdentifierType()));
+		attributes.add(new OrganisationIdentifierAttribute("25450442", SubjectIdentifierType.NSI_SORCODE.toString()));
 		attributes.add(new SystemVendorNameAttribute(systemOwner));
 		attributes.add(new SystemNameAttribute(systemName));
 		attributes.add(new SystemVersionAttribute(systemVersion));

@@ -96,7 +96,7 @@ public class DgwsConfiguration {
 
 	@Bean
 	public HsuidSoapDecorator hsuidSoapDecorator() {
-		return new HsuidSoapDecorator(dgwsContext());
+		return new HsuidSoapDecorator();
 	}
 	
 	@Bean
