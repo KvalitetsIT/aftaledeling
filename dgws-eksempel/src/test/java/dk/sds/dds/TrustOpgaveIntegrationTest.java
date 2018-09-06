@@ -65,7 +65,7 @@ public class TrustOpgaveIntegrationTest {
 	@Before
 	public void setup() {
 		
-		organisationIdentifierAttribute = new OrganisationIdentifierAttribute(LAKESIDE_CVR_NUMBER, SubjectIdentifierType.NSI_CVR.toString());
+		organisationIdentifierAttribute = new OrganisationIdentifierAttribute(LAKESIDE_CVR_NUMBER, SubjectIdentifierType.NSI_SORCODE.toString());
 		
 		brugerUdenAuthUserInfoKendtRolle = new UserInfo("1812292476", "Grethe", "Pedersen", "grethe@kuk.dk", "Test", "god-rolle", null);
 		brugerUdenAuthUserInfoUkendtRolle = new UserInfo("1812292476", "Grethe", "Pedersen", "grethe@kuk.dk", "Test", "unknown-role", null);
@@ -104,7 +104,7 @@ public class TrustOpgaveIntegrationTest {
 	public void testFremsoegDokumenterMedAutoriseretBrugerMoces() throws IOException, XdsException {
 	
 		// Given
-		dgwsContext.setDgwsUserContext(brugerMedAuthKeystore, BRUGER_MED_AUTH_KEYSTORE_PASSWORD, BRUGER_MED_AUTH_KEYSTORE_ALIAS, brugerMedAuthUserInfo, brugerMedAuthCareProvider, organisationIdentifierAttribute, true);
+		dgwsContext.setDgwsUserContext(brugerMedAuthKeystore, BRUGER_MED_AUTH_KEYSTORE_PASSWORD, BRUGER_MED_AUTH_KEYSTORE_ALIAS, brugerMedAuthUserInfo, brugerMedAuthCareProvider, organisationIdentifierAttribute, false);
 
 		// When
 		List<DocumentEntry> documentEntries = appointmentXdsRequestService.getDocumentsForPatient(dgwsContext.getPatientContext().getPatientId());
@@ -117,7 +117,7 @@ public class TrustOpgaveIntegrationTest {
 	public void testFremsoegDokumenterMedIkkeAutoriseretBrugerMedUkendtRolle() throws IOException, XdsException {
 	
 		// Given
-		dgwsContext.setDgwsUserContext(brugerUdenAuthKeystore, BRUGER_UDEN_AUTH_KEYSTORE_PASSWORD, BRUGER_UDEN_AUTH_KEYSTORE_ALIAS, brugerUdenAuthUserInfoUkendtRolle, brugerUdenAuthCareProvider, organisationIdentifierAttribute, true);
+		dgwsContext.setDgwsUserContext(brugerUdenAuthKeystore, BRUGER_UDEN_AUTH_KEYSTORE_PASSWORD, BRUGER_UDEN_AUTH_KEYSTORE_ALIAS, brugerUdenAuthUserInfoUkendtRolle, brugerUdenAuthCareProvider, organisationIdentifierAttribute, false);
 
 		// When
 		List<DocumentEntry> documentEntries = appointmentXdsRequestService.getAllAppointmentsForPatient(dgwsContext.getPatientContext().getPatientId());
@@ -130,7 +130,7 @@ public class TrustOpgaveIntegrationTest {
 	public void testFremsoegDokumenterMedIkkeAutoriseretBrugerMedKendtRolleOgLovligDokumentType() throws IOException, XdsException {
 	
 		// Given
-		dgwsContext.setDgwsUserContext(brugerUdenAuthKeystore, BRUGER_UDEN_AUTH_KEYSTORE_PASSWORD, BRUGER_UDEN_AUTH_KEYSTORE_ALIAS, brugerUdenAuthUserInfoKendtRolle, brugerUdenAuthCareProvider, organisationIdentifierAttribute, true);
+		dgwsContext.setDgwsUserContext(brugerUdenAuthKeystore, BRUGER_UDEN_AUTH_KEYSTORE_PASSWORD, BRUGER_UDEN_AUTH_KEYSTORE_ALIAS, brugerUdenAuthUserInfoKendtRolle, brugerUdenAuthCareProvider, organisationIdentifierAttribute, false);
 
 		// When
 		List<DocumentEntry> documentEntries = appointmentXdsRequestService.getAllAppointmentsForPatient(dgwsContext.getPatientContext().getPatientId());
@@ -143,7 +143,8 @@ public class TrustOpgaveIntegrationTest {
 	public void testFremsoegDokumenterMedIkkeAutoriseretBrugerMedKendtRolleMedMedUlovligDokumenttype() throws IOException, XdsException {
 	
 		// Given
-		dgwsContext.setDgwsUserContext(brugerUdenAuthKeystore, BRUGER_UDEN_AUTH_KEYSTORE_PASSWORD, BRUGER_UDEN_AUTH_KEYSTORE_ALIAS, brugerUdenAuthUserInfoKendtRolle, brugerUdenAuthCareProvider, organisationIdentifierAttribute, true);
+		dgwsContext.setDgwsUserContext(brugerUdenAuthKeystore, BRUGER_UDEN_AUTH_KEYSTORE_PASSWORD, BRUGER_UDEN_AUTH_KEYSTORE_ALIAS, brugerUdenAuthUserInfoKendtRolle, brugerUdenAuthCareProvider, organisationIdentifierAttribute, false);
+
 		List<Code> ulovligDokumentType = new LinkedList<>();
 		ulovligDokumentType.add(new Code(Loinc.PHMR_CODE, new LocalizedString(Loinc.PMHR_DISPLAYNAME), Loinc.OID));
 

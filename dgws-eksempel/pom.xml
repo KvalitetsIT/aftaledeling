@@ -29,16 +29,15 @@
 			<artifactId>seal</artifactId>
 			<version>2.3.1</version>
 		</dependency>
-		<dependency>
-			<groupId>dk.nsi.hsuid</groupId>
-			<artifactId>hsuid</artifactId>
-			<version>1.1.11-SNAPSHOT</version>
-		</dependency>
 		<!-- Test -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>dk.nsi.hsuid</groupId>
+			<artifactId>hsuid</artifactId>
 		</dependency>
 	</dependencies>
 	<build>
@@ -52,4 +51,13 @@
 			</plugin>
 		</plugins>
 	</build>
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>dk.nsi.hsuid</groupId>
+				<artifactId>hsuid</artifactId>
+				<version>1.1.11-SNAPSHOT</version>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
 </project>
