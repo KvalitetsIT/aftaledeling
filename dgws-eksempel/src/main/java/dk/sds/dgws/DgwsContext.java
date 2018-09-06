@@ -135,6 +135,10 @@ public class DgwsContext {
 		}
 	}
 
+	public boolean useConsentOverride() {
+		return consentOverride;
+	}
+	
 	public String getConsentOverride() {
 		return consentOverride.toString();
 	}
