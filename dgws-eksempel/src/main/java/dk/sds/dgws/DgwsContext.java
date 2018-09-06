@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.w3c.dom.Document;
 
+import dk.nsi.hsuid.OrganisationIdentifierAttribute;
 import dk.nsi.hsuid.UserTypeAttribute;
 import dk.nsi.hsuid._2016._08.hsuid_1_1.SubjectIdentifierType;
 import dk.sosi.seal.SOSIFactory;
@@ -54,6 +55,7 @@ public class DgwsContext {
 	protected CredentialVault userVault;
 	protected UserInfo userInfo;
 	protected CareProvider careProvider;
+	protected OrganisationIdentifierAttribute organisationIdentifierAttribute;
 	
 	protected Boolean consentOverride = true;
 	
@@ -97,17 +99,19 @@ public class DgwsContext {
 	}
 
 	
-	public void setDgwsUserContext(Resource keystore, String password, String alias, UserInfo userInfo, CareProvider careProvider, boolean consentOverride) throws IOException {
+	public void setDgwsUserContext(Resource keystore, String password, String alias, UserInfo userInfo, CareProvider careProvider, OrganisationIdentifierAttribute organisationIdentifierAttribute, boolean consentOverride) throws IOException {
 		this.userVault = getVaultFromFile(keystore, password, alias);
 		this.userInfo = userInfo;
 		this.careProvider = careProvider;
 		this.consentOverride = consentOverride;
+		this.organisationIdentifierAttribute = organisationIdentifierAttribute;
 	}
 	
 	public void clearDgwsUserContext() {
 		this.userVault = null;
 		this.userInfo = null;
 		this.careProvider = null;
+		this.organisationIdentifierAttribute = null;
 		this.consentOverride = true;
 	}
 
@@ -158,19 +162,12 @@ public class DgwsContext {
 		}
 	}
 
-	public String getOrganisationIdentifier() {
-		if (careProvider != null) {
-			return careProvider.getID();
+	public OrganisationIdentifierAttribute getOrganisationIdentifierAttribute() {
+		if (organisationIdentifierAttribute != null) {
+			return organisationIdentifierAttribute;			
+		} else {
+			return new OrganisationIdentifierAttribute("25450442", SubjectIdentifierType.NSI_SORCODE.toString());
 		}
-		return "293591000016003";
-	}
-
-	public String getOrganisationIdentifierType() {
-		if (careProvider != null) {
-			return careProvider.getType();
-		}
-		
-		return SubjectIdentifierType.NSI_SORCODE.toString();
 	}
 
 }

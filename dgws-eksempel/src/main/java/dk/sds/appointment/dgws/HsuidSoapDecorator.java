@@ -28,9 +28,7 @@ import dk.nsi.hsuid.ResponsibleUserCivilRegistrationNumberAttribute;
 import dk.nsi.hsuid.SystemNameAttribute;
 import dk.nsi.hsuid.SystemVendorNameAttribute;
 import dk.nsi.hsuid.SystemVersionAttribute;
-import dk.nsi.hsuid.UserTypeAttribute;
 import dk.nsi.hsuid._2016._08.hsuid_1_1.HsuidHeader;
-import dk.nsi.hsuid._2016._08.hsuid_1_1.SubjectIdentifierType;
 import dk.sds.dgws.DgwsContext;
 
 public class HsuidSoapDecorator extends DgwsSoapDecorator {
@@ -56,12 +54,15 @@ public class HsuidSoapDecorator extends DgwsSoapDecorator {
 		attributes.add(dgwsContext.getUserType());
 		//attributes.add(new UserTypeAttribute(isCitizen));
 		attributes.add(new ActingUserCivilRegistrationNumberAttribute(dgwsContext.getUserCivilRegistrationNumber()));
-		attributes.add(new OrganisationIdentifierAttribute("25450442", SubjectIdentifierType.NSI_SORCODE.toString()));
+		OrganisationIdentifierAttribute oia = dgwsContext.getOrganisationIdentifierAttribute();
+		if (oia != null) {
+			attributes.add(oia);
+		}
 		attributes.add(new SystemVendorNameAttribute(systemOwner));
 		attributes.add(new SystemNameAttribute(systemName));
 		attributes.add(new SystemVersionAttribute(systemVersion));
 		attributes.add(new OperationsOrganisationNameAttribute(responsibleOrg));
-		attributes.add(new ConsentOverrideAttribute(dgwsContext.getConsentOverride()));
+		//attributes.add(new ConsentOverrideAttribute(dgwsContext.getConsentOverride()));
 		attributes.add(new ResponsibleUserCivilRegistrationNumberAttribute(dgwsContext.getUserCivilRegistrationNumber()));
 		attributes.add(new ResponsibleUserAuthorizationCodeAttribute(dgwsContext.getUserAuthorizationCode()));
 		HsuidHeader hsuidHeader = HealthcareServiceUserIdentificationHeaderUtil.createHealthcareServiceUserIdentificationHeader(issuer, attributes);
