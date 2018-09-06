@@ -22,6 +22,7 @@ import dk.nsi.hsuid.CitizenCivilRegistrationNumberAttribute;
 import dk.nsi.hsuid.ConsentOverrideAttribute;
 import dk.nsi.hsuid.HealthcareServiceUserIdentificationHeaderUtil;
 import dk.nsi.hsuid.OperationsOrganisationNameAttribute;
+import dk.nsi.hsuid.OrganisationIdentifierAttribute;
 import dk.nsi.hsuid.ResponsibleUserAuthorizationCodeAttribute;
 import dk.nsi.hsuid.ResponsibleUserCivilRegistrationNumberAttribute;
 import dk.nsi.hsuid.SystemNameAttribute;
@@ -29,6 +30,7 @@ import dk.nsi.hsuid.SystemVendorNameAttribute;
 import dk.nsi.hsuid.SystemVersionAttribute;
 import dk.nsi.hsuid.UserTypeAttribute;
 import dk.nsi.hsuid._2016._08.hsuid_1_1.HsuidHeader;
+import dk.nsi.hsuid._2016._08.hsuid_1_1.SubjectIdentifierType;
 import dk.sds.dgws.DgwsContext;
 
 public class HsuidSoapDecorator extends DgwsSoapDecorator {
@@ -51,7 +53,8 @@ public class HsuidSoapDecorator extends DgwsSoapDecorator {
 	private Header getHsuid(String isCitizen, String systemOwner, String systemName, String systemVersion, String responsibleOrg, String issuer) throws JAXBException, ParserConfigurationException {
 		List<Attribute> attributes = new ArrayList<Attribute>();
 		attributes.add(new CitizenCivilRegistrationNumberAttribute(dgwsContext.getPatientContext().getPatientId()));
-		attributes.add(new UserTypeAttribute(isCitizen));
+		attributes.add(dgwsContext.getUserType());
+		//attributes.add(new UserTypeAttribute(isCitizen));
 		attributes.add(new ActingUserCivilRegistrationNumberAttribute(dgwsContext.getUserCivilRegistrationNumber()));
 		attributes.add(new OrganisationIdentifierAttribute("25450442", SubjectIdentifierType.NSI_SORCODE.toString()));
 		attributes.add(new SystemVendorNameAttribute(systemOwner));

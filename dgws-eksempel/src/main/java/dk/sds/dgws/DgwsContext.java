@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.w3c.dom.Document;
 
+import dk.nsi.hsuid.UserTypeAttribute;
 import dk.nsi.hsuid._2016._08.hsuid_1_1.SubjectIdentifierType;
 import dk.sosi.seal.SOSIFactory;
 import dk.sosi.seal.model.AuthenticationLevel;
@@ -110,6 +111,13 @@ public class DgwsContext {
 		this.consentOverride = true;
 	}
 
+	public UserTypeAttribute getUserType() {
+		if (userInfo != null) {
+			return (userInfo.getAuthorizationCode() == null ? UserTypeAttribute.UNAUTHORIZEDPROFESSIONAL : UserTypeAttribute.HEALTHCAREPROFESSIONAL);
+		} else {
+			return UserTypeAttribute.HEALTHCAREPROFESSIONAL;
+		}
+	}
 	
 	public String getUserCivilRegistrationNumber() {
 		if (userInfo != null) {
