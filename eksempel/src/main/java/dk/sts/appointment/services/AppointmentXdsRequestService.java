@@ -215,6 +215,9 @@ public class AppointmentXdsRequestService {
 		appointmentCdaMetadata.setTypeCode(AppointmentConstants.APPOINTMENT_CODE);
 		appointmentCdaMetadata.setServiceStartTime(apd.getServiceStartTime());
 		appointmentCdaMetadata.setServiceStopTime(apd.getServiceStopTime());
+		appointmentCdaMetadata.setMimeType("text/xml");
+		appointmentCdaMetadata.setLanguageCode("da/dk");
+		appointmentCdaMetadata.setConfidentialityCode(new Code(apd.getConfidentialityCode(), new LocalizedString(apd.getConfidentialityCode()), "2.16.840.1.113883.5.25"));
 		return appointmentCdaMetadata;
 	}
 	

@@ -54,6 +54,11 @@ public class DgwsConfiguration {
 	@Autowired
 	private ApplicationContext appContext;
 
+	
+	@Value("${xds.iti41.dgws:true}")
+	boolean xdsIti41Dgws;
+	
+
 	@PostConstruct 
 	public void init() {
 		// The SOSI Seal Library reads the alias value using System.getProperty()
@@ -66,7 +71,9 @@ public class DgwsConfiguration {
 		// Add DGWS decorator to all ITI beans
 		Iti41PortType iti41 = appContext.getBean(Iti41PortType.class);
 		Client proxy41 = ClientProxy.getClient(iti41);
-		proxy41.getOutInterceptors().add(dgwsSoapDecorator);
+		if (xdsIti41Dgws) {
+			proxy41.getOutInterceptors().add(dgwsSoapDecorator);
+		}
 		
 		Iti43PortType iti43 = appContext.getBean(Iti43PortType.class);
 		Client proxy43 = ClientProxy.getClient(iti43);
