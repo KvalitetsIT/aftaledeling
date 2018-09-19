@@ -31,6 +31,7 @@ import dk.sosi.seal.model.constants.IDValues;
 import dk.sosi.seal.model.constants.SubjectIdentifierTypeValues;
 import dk.sosi.seal.pki.SignatureProviderFactory;
 import dk.sosi.seal.vault.CredentialVault;
+import dk.sosi.seal.xml.XmlUtil;
 import dk.sts.appointment.configuration.PatientContext;
 
 public class DgwsContext {
@@ -94,6 +95,7 @@ public class DgwsContext {
 			securityTokenRequest.setIDCard(selfSignedSystemIdCard);
 
 			Document doc = securityTokenRequest.serialize2DOMDocument();
+			
 			return doc;
 		}
 	}
@@ -137,6 +139,10 @@ public class DgwsContext {
 		} else {
 			return "SRTTQ";
 		}
+	}
+	
+	public void setConsentOverride(boolean consentOverride) {
+		this.consentOverride = consentOverride;
 	}
 
 	public boolean useConsentOverride() {

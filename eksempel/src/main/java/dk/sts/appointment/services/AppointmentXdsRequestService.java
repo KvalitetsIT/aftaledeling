@@ -90,6 +90,13 @@ public class AppointmentXdsRequestService {
 		return getDocumentsForPatient(citizenId, null, null, null);
 	}
 	
+	public AdhocQueryResponse getDocumentsForPatientAdhocQueryResponse(String citizenId, List<Code> typeCodes, Date start, Date end) {
+		AdhocQueryRequest adhocQueryRequest = appointmentXdsRequestBuilderService.buildAdhocQueryRequest(citizenId, typeCodes, start, end);
+		AdhocQueryResponse adhocQueryResponse = iti18PortType.documentRegistryRegistryStoredQuery(adhocQueryRequest);
+		return adhocQueryResponse;
+	}
+	
+	
 	public List<DocumentEntry> getDocumentsForPatient(String citizenId, List<Code> typeCodes, Date start, Date end) throws XdsException {
 		AdhocQueryRequest adhocQueryRequest = appointmentXdsRequestBuilderService.buildAdhocQueryRequest(citizenId, typeCodes, start, end);
 		AdhocQueryResponse adhocQueryResponse = iti18PortType.documentRegistryRegistryStoredQuery(adhocQueryRequest);
@@ -216,7 +223,7 @@ public class AppointmentXdsRequestService {
 		appointmentCdaMetadata.setServiceStartTime(apd.getServiceStartTime());
 		appointmentCdaMetadata.setServiceStopTime(apd.getServiceStopTime());
 		appointmentCdaMetadata.setMimeType("text/xml");
-		appointmentCdaMetadata.setLanguageCode("da/dk");
+		appointmentCdaMetadata.setLanguageCode(apd.getLanguageCode());
 		appointmentCdaMetadata.setConfidentialityCode(new Code(apd.getConfidentialityCode(), new LocalizedString(apd.getConfidentialityCode()), "2.16.840.1.113883.5.25"));
 		return appointmentCdaMetadata;
 	}
@@ -242,7 +249,7 @@ public class AppointmentXdsRequestService {
 	}
 	
 
-	protected EbXMLFactory getEbXmlFactory() {
+	public EbXMLFactory getEbXmlFactory() {
 		return ebXMLFactory;
 	}
 
