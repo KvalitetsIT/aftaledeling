@@ -29,11 +29,13 @@ import org.openehealth.ipf.commons.ihe.xds.core.metadata.DocumentEntry;
 import org.openehealth.ipf.commons.ihe.xds.core.metadata.LocalizedString;
 import org.openehealth.ipf.commons.ihe.xds.core.requests.query.QueryReturnType;
 import org.openehealth.ipf.commons.ihe.xds.core.responses.QueryResponse;
+import org.openehealth.ipf.commons.ihe.xds.core.responses.Severity;
 import org.openehealth.ipf.commons.ihe.xds.core.responses.Status;
 import org.openehealth.ipf.commons.ihe.xds.core.stub.ebrs30.lcm.SubmitObjectsRequest;
 import org.openehealth.ipf.commons.ihe.xds.core.stub.ebrs30.query.AdhocQueryRequest;
 import org.openehealth.ipf.commons.ihe.xds.core.stub.ebrs30.query.AdhocQueryResponse;
 import org.openehealth.ipf.commons.ihe.xds.core.stub.ebrs30.rs.RegistryError;
+import org.openehealth.ipf.commons.ihe.xds.core.stub.ebrs30.rs.RegistryErrorList;
 import org.openehealth.ipf.commons.ihe.xds.core.stub.ebrs30.rs.RegistryResponseType;
 import org.openehealth.ipf.commons.ihe.xds.core.transform.responses.QueryResponseTransformer;
 import org.openehealth.ipf.commons.ihe.xds.iti18.Iti18PortType;
@@ -100,8 +102,11 @@ public class AppointmentXdsRequestService {
 	public List<DocumentEntry> getDocumentsForPatient(String citizenId, List<Code> typeCodes, Date start, Date end) throws XdsException {
 		AdhocQueryRequest adhocQueryRequest = appointmentXdsRequestBuilderService.buildAdhocQueryRequest(citizenId, typeCodes, start, end);
 		AdhocQueryResponse adhocQueryResponse = iti18PortType.documentRegistryRegistryStoredQuery(adhocQueryRequest);
-		if (adhocQueryResponse.getRegistryErrorList() != null && !adhocQueryResponse.getRegistryErrorList().getRegistryError().isEmpty()) {
-			throw new XdsException(adhocQueryResponse.getRegistryErrorList());
+		
+		RegistryErrorList registryErrorList = adhocQueryResponse.getRegistryErrorList();
+		
+		if (hasErrors(registryErrorList)) {
+			throw new XdsException(registryErrorList);
 		} else {
 			QueryResponseTransformer queryResponseTransformer = new QueryResponseTransformer(getEbXmlFactory());
 			EbXMLQueryResponse30 ebXmlresponse = new EbXMLQueryResponse30(adhocQueryResponse);
@@ -109,6 +114,20 @@ public class AppointmentXdsRequestService {
 			List<DocumentEntry> docEntries = queryResponse.getDocumentEntries();
 			return docEntries;
 		}
+	}
+	
+	private boolean hasErrors(RegistryErrorList registryErrorList) {
+		if(registryErrorList != null) {
+			List<RegistryError> registryErrors = registryErrorList.getRegistryError();
+			for (RegistryError registryError : registryErrors) {
+				Severity severity  = Severity.valueOfOpcode30(registryError.getSeverity());
+				if(Severity.ERROR.equals(severity)) {
+					return true;
+				}
+			}		
+		}
+		return false;
+		
 	}
 
 	public DocumentEntry getAppointmentDocumentEntry(String documentId) throws XdsException {
