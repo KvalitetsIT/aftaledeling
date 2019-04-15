@@ -9,6 +9,8 @@ import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import dk.nsi.hsuid.*;
+import dk.nsi.hsuid._2016._08.hsuid_1_1.SubjectIdentifierType;
 import org.apache.cxf.binding.soap.SoapMessage;
 import org.apache.cxf.headers.Header;
 import org.apache.cxf.interceptor.Fault;
@@ -16,18 +18,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
-import dk.nsi.hsuid.ActingUserCivilRegistrationNumberAttribute;
-import dk.nsi.hsuid.Attribute;
-import dk.nsi.hsuid.CitizenCivilRegistrationNumberAttribute;
-import dk.nsi.hsuid.ConsentOverrideAttribute;
-import dk.nsi.hsuid.HealthcareServiceUserIdentificationHeaderUtil;
-import dk.nsi.hsuid.OperationsOrganisationNameAttribute;
-import dk.nsi.hsuid.ResponsibleUserAuthorizationCodeAttribute;
-import dk.nsi.hsuid.ResponsibleUserCivilRegistrationNumberAttribute;
-import dk.nsi.hsuid.SystemNameAttribute;
-import dk.nsi.hsuid.SystemVendorNameAttribute;
-import dk.nsi.hsuid.SystemVersionAttribute;
-import dk.nsi.hsuid.UserTypeAttribute;
 import dk.nsi.hsuid._2016._08.hsuid_1_1.HsuidHeader;
 import dk.sds.dgws.DgwsContext;
 

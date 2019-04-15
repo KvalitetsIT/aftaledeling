@@ -24,7 +24,7 @@ import dk.s4.hl7.cda.model.Patient;
 import dk.s4.hl7.cda.model.Patient.PatientBuilder;
 import dk.s4.hl7.cda.model.PersonIdentity;
 import dk.s4.hl7.cda.model.apd.AppointmentDocument;
-import dk.s4.hl7.cda.model.apd.AppointmentDocument.Status;
+import dk.s4.hl7.cda.model.apd.StatusV11;
 import dk.sds.appointment.configuration.DgwsConfiguration;
 import dk.sts.appointment.configuration.ApplicationConfiguration;
 import dk.sts.appointment.configuration.PatientContext;
@@ -144,7 +144,7 @@ public class AftaleGenerator implements CommandLineRunner {
 		appointment.setLanguageCode("da-DK");
 		appointment.setTitle("Aftale for "+patientId);
 		appointment.setEffectiveTime(from);
-		appointment.setAppointmentStatus(Status.ACTIVE);
+		appointment.setAppointmentStatus(StatusV11.ACTIVE);
 		appointment.setDocumentationTimeInterval(from, to);
 		appointment.setAppointmentTitle("Aftale");
 		appointment.setAppointmentText("<paragraph>Aftale:</paragraph>" + 
