@@ -23,7 +23,7 @@
 					<goals>install</goals>
 					<goalsDirectory>4s-cda-builders</goalsDirectory>
 					<connectionType>developerConnection</connectionType>
-					<scmVersion>${cda-vuilder-version}</scmVersion>
+					<scmVersion>${cda-builder-version}</scmVersion>
 					<scmVersionType>revision</scmVersionType>
 				</configuration>
 				<executions>
