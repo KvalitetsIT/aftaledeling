@@ -33,8 +33,8 @@ import dk.sosi.seal.vault.CredentialVaultException;
 import dk.sosi.seal.vault.FileBasedCredentialVault;
 import dk.sts.appointment.configuration.PatientContext;
 
-//@PropertySource("classpath:dgws.properties")
-@PropertySource("file:./dgws-eksempel/config/dgws.properties")
+@PropertySource("classpath:dgws.properties")
+//@PropertySource("file:./dgws-eksempel/config/dgws.properties")
 public class DgwsConfiguration {
 
 	@Value("${soap.setmustunderstandtofalse:false}")
